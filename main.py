@@ -15,7 +15,7 @@ def main_menu():
     print("[4] Show people whose birthday is the next")
     print("[5] View the whole book")
     print("[6] View person's age")
-    print("[7] View people older than N years")
+    print("[7] View people older/younger than N years")
     print("[8] Quit")
     user_input = input("Please, enter the number: ")
     while user_input not in "12345678":
