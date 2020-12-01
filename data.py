@@ -4,6 +4,7 @@ import os
 import re
 from additional import Text, GColor
 from datetime import datetime
+from errors import DuplicateNote
 warnings.filterwarnings("ignore")  # FuzzyWuzzy argues on SequenceMatcher using instead of python-Levenshtein
 from fuzzywuzzy import fuzz
 
@@ -29,7 +30,7 @@ class Book:
             with open(self.path, "w") as handle:
                 json.dump(data, handle, indent=2)
         else:
-            print("EXISTS")  # USER ACTION REQUIRED TODO: add user action!
+            raise DuplicateNote
 
     def _exists(self, note):
         """ Returns true if a note already exists in a Book, false if not. """
