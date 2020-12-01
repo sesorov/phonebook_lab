@@ -13,8 +13,6 @@ jobs:
   build:
 
     runs-on: windows-latest
-    env:
-      working-directory: ./tests 
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
@@ -40,4 +38,3 @@ jobs:
       run: |
         pip install coverage
         coverage run -m unittest discover tests && coverage report -m
-      working-directory: ${{env.working-directory}}
