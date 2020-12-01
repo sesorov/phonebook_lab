@@ -13,7 +13,7 @@ def mocked_get_now():
 class TestCard(unittest.TestCase):
 
     def setUp(self):
-        self.path = "../test_book_standard.json"
+        self.path = "test_book_standard.json"
         self.book = Book(path=self.path)
         with open(self.path, "r") as handle:
             self.data = json.load(handle)

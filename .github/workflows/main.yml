@@ -37,4 +37,5 @@ jobs:
     - name: Test with unittest
       run: |
         pip install coverage
+        cd tests
         coverage run -m unittest discover tests && coverage report -m
