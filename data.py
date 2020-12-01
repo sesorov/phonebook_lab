@@ -181,7 +181,7 @@ class Book:
                 data = sorted(data, key=lambda x: x["score"], reverse=True)
                 if data[0]['score'] == 0:
                     return -1
-                found = [note['id'] for note in data if note['score'] == data[0]['score']]
+                found = [note['id'] for note in data]# if note['score'] == data[0]['score']]
                 return found[:output_range]
 
     def print(self, notes_ids: list = None, notes: list = None, mark_first: bool = False) -> None:

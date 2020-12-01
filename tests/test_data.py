@@ -142,3 +142,71 @@ class TestCard(unittest.TestCase):
 
     def test_is_name_incorrect_single(self):
         self.assertFalse(self.book.is_name("A"))
+
+    def test_search_name_strict(self):
+        for i in range(10):
+            day = (datetime.now().day + random.randint(0, 10)) % 30 + 1
+            month = (datetime.now().month - random.randint(0, 1))
+            date = ''.join(f"{day}.{month}.{datetime.now().year}")
+            note = {"name": f"Testname_{i}",
+                    "surname": f"Testsurname_{i}",
+                    "phone": f"8812621563{i}",
+                    "birth_date": date}
+            self.book._add(note=note)
+        self.assertEqual(self.book.search(name='Testname_3', is_strict=True), 3)
+
+    def test_search_surname_strict(self):
+        for i in range(10):
+            day = (datetime.now().day + random.randint(0, 10)) % 30 + 1
+            month = (datetime.now().month - random.randint(0, 1))
+            date = ''.join(f"{day}.{month}.{datetime.now().year}")
+            note = {"name": f"Testname_{i}",
+                    "surname": f"Testsurname_{i}",
+                    "phone": f"8812621563{i}",
+                    "birth_date": date}
+            self.book._add(note=note)
+        self.assertEqual(self.book.search(surname='Testsurname_2', is_strict=True), 2)
+
+    def test_search_phone_strict(self):
+        for i in range(10):
+            day = (datetime.now().day + random.randint(0, 10)) % 30 + 1
+            month = (datetime.now().month - random.randint(0, 1))
+            date = ''.join(f"{day}.{month}.{datetime.now().year}")
+            note = {"name": f"Testname_{i}",
+                    "surname": f"Testsurname_{i}",
+                    "phone": f"8812621563{i}",
+                    "birth_date": date}
+            self.book._add(note=note)
+        self.assertEqual(self.book.search(phone_number='88126215632', is_strict=True), 2)
+
+    def test_search_date_strict(self):
+        _date = ''
+        for i in range(10):
+            day = (datetime.now().day + random.randint(0, 10)) % 30 + 1
+            month = (datetime.now().month - random.randint(0, 1))
+            date = ''.join(f"{day}.{month}.{datetime.now().year}")
+            if i == 2:
+                _date = date
+            note = {"name": f"Testname_{i}",
+                    "surname": f"Testsurname_{i}",
+                    "phone": f"8812621563{i}",
+                    "birth_date": date}
+            self.book._add(note=note)
+        self.assertEqual(self.book.search(date=_date, is_strict=True), 2)
+
+    def test_search_name_fuzzy(self):
+        for i in range(10):
+            day = (datetime.now().day + random.randint(0, 10)) % 30 + 1
+            month = (datetime.now().month - random.randint(0, 1))
+            date = ''.join(f"{day}.{month}.{datetime.now().year}")
+            note = {"name": f"Testname_{i}",
+                    "surname": f"Testsurname_{i}",
+                    "phone": f"8812621563{i}",
+                    "birth_date": date}
+            note_2 = {"name": f"Nonono_{i}",
+                    "surname": f"Testsurname_{i}",
+                    "phone": f"8812621563{i}",
+                    "birth_date": date}
+            self.book._add(note=note)
+            self.book._add(note=note_2)
+        self.assertEqual(self.book.search(name='Testname_1', is_strict=False, output_range=3), [2, 0, 4])
