@@ -1,5 +1,5 @@
 # Phone Book Lab Work 
-![Phonebook package](https://github.com/sesorov/phonebook_lab/blob/master/.github/workflows/main.yml/badge.svg)
+[![Actions Status](https://github.com/sesorov/phonebook_lab/workflows/Phonebook%20package/badge.svg)](https://github.com/sesorov/phonebook_lab/actions)
 
 This is a repository for phone book realisation under the framework of IDA course.
 
