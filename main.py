@@ -16,9 +16,10 @@ def main_menu():
     print("[5] View the whole book")
     print("[6] View person's age")
     print("[7] View people older/younger than N years")
-    print("[8] Quit")
+    print("[8] Search")
+    print("[9] Quit")
     user_input = input("Please, enter the number: ")
-    while user_input not in "12345678":
+    while user_input not in "123456789":
         user_input = input(Text.RED + "Please, select a valid number: " + Text.END)
     if user_input == '1':
         PhoneBook.add_note()
@@ -35,6 +36,9 @@ def main_menu():
     elif user_input == '7':
         PhoneBook.view_people_aged()
     elif user_input == '8':
+        PhoneBook.search_notes()
+    elif user_input == '9':
+        print(GREEN + "See you later!" + Text.END)
         sys.exit()
 
 

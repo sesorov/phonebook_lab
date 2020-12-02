@@ -19,7 +19,8 @@ Please, install requirements before working with this program.
 ## Available commands
 
 * `Add notes` - You may add notes in a very simple way;
-* `Edit notes`- Edit any information in a Book
+* `Search notes` - Search notes by any criteria;
+* `Edit notes`- Edit any information in a Book;
 * `Delete notes` - Delete notes by name and surname, phone or ID;
 * `Show people whose birthday is coming soon` - Get the list of people wose birthday will be in the next mont or within another range;
 * `View the whole book` - See all notes in a pleasant way;
@@ -27,7 +28,7 @@ Please, install requirements before working with this program.
 * `View people older/younger than N` - See the list of people older/younger of a certain age;
 
 ## Detailed description
-
+Find the examples of represented features [here](https://docs.google.com/document/d/1MD3QL5liMkzbQBE7fEnWv3_Dp42OIQpbGGY3WfgInYM/edit?usp=sharing).
 
 ## Support
 

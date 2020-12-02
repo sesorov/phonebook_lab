@@ -5,6 +5,7 @@ import re
 from additional import Text, GColor
 from datetime import datetime
 from errors import DuplicateNote
+
 warnings.filterwarnings("ignore")  # FuzzyWuzzy argues on SequenceMatcher using instead of python-Levenshtein
 from fuzzywuzzy import fuzz
 
@@ -128,8 +129,8 @@ class Book:
                 print("-----------------------------" + "-" * len(self.path))
         print(green + Text.BOLD + "*****************************" + "*" * len(self.path) + Text.END)
 
-    def search(self, name: str = None, surname: str = None, phone_number: str = None, date: str = None,
-               output_range: int = None, is_strict: bool = False) -> list or int:
+    def search(self, name: str = None, surname: str = None, phone: str = None, birth_date: str = None,
+               output_range: int = None, is_strict: bool = False, is_fuzzy: bool = False) -> list or int:
         """ Searches notes in a Book by multiple parameters.
             If is_strict, function will return only one note ID, which meets all the requirements.
             If is_strict == false, function will search for most satisfying notes, including fuzzy
@@ -147,10 +148,10 @@ class Book:
                     if surname and note['surname'] != surname:
                         useless_notes.append(i)
                         continue
-                    if phone_number and note['phone'] != Book.correct_phone(phone_number):
+                    if phone and note['phone'] != Book.correct_phone(phone):
                         useless_notes.append(i)
                         continue
-                    if Book.is_date(date) and note['birth_date'] != date:
+                    if Book.is_date(birth_date) and note['birth_date'] != birth_date:
                         useless_notes.append(i)
                         continue
                 for i, _index in enumerate(useless_notes):
@@ -168,21 +169,23 @@ class Book:
                     if surname is not None:
                         note["score"] += note['surname'] == surname if is_strict else fuzz.ratio(surname,
                                                                                                  note["surname"])
-                    if phone_number is not None:
-                        if note["phone"] == Book.correct_phone(phone_number):
+                    if phone is not None:
+                        if note["phone"] == Book.correct_phone(phone):
                             note["score"] += 1
-                    if date is not None:
-                        if Book.is_date(date):
-                            if note["birth_date"] == date:
-                                note["score"] += 1
+                    if birth_date is not None:
+                        if Book.is_date(birth_date):
+                            note["score"] += note.get("birth_date") == birth_date if is_strict else fuzz.ratio(birth_date, note.get("birth_date"))
                         else:
                             print("NOT A DATE")
                             pass  # USER ACTION REQUIRED TODO: add user action!
                 data = sorted(data, key=lambda x: x["score"], reverse=True)
                 if data[0]['score'] == 0:
                     return -1
-                found = [note['id'] for note in data]# if note['score'] == data[0]['score']]
-                return found[:output_range]
+                if is_strict:
+                    data = [note['id'] for note in data if note['score'] == data[0]['score']]# if not is_fuzzy else True)]
+                else:
+                    data = [note['id'] for note in data]
+                return data[:output_range]
 
     def print(self, notes_ids: list = None, notes: list = None, mark_first: bool = False) -> None:
         """ Prints provided notes by IDs or from list. """
@@ -208,6 +211,37 @@ class Book:
                   (green_bold + f" ({note['gap']} days remaining)" + Text.END) if "gap" in note else '')
             print((color if id == 1 else Text.YELLOW) +
                   "------------------------------" + "-" * len(self.path) + Text.END)
+
+    def print_table(self, notes_ids: list = None, notes: list = None, format_key: str = None):
+        """ Prints all notes as one table. """
+        if notes is None:
+            if notes_ids is not None:
+                with open(self.path, "r") as handle:
+                    data = json.load(handle)
+                    notes = [data[i] for i in notes_ids]
+            else:
+                notes = self._get_all()
+        if 'id' not in notes[0].keys():
+            for _id, note in enumerate(notes):
+                note['ID'] = str(_id)
+        for note in notes:
+            for key, value in note.items():
+                note[key] = str(value)
+        header = list(notes[0].keys() if notes else [])
+
+        table = [header]
+        for item in notes:
+            table.append([item.get(col, 'NO DATA') for col in header])
+        size = [max(map(len, col)) for col in zip(*table)]
+        for i in range(0, len(table) + 1)[::-1]:
+            table.insert(i, ['-' * i for i in size])
+        formatting = f'{Text.BOLD} | '.join([Text.BOLD + "{{:<{}}}".format(i) for i in size]) + Text.END
+        sep = Text.BOLD + f'{Text.BOLD}-+-'.join([Text.BOLD + "{{:<{}}}".format(i) for i in size]) + Text.END
+        for item in table:
+            if item[0][0] == '-':
+                print(sep.format(*item))
+            else:
+                print(formatting.format(*item))
 
     @staticmethod
     def is_date(check_date: str):

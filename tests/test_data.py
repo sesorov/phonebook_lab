@@ -177,7 +177,7 @@ class TestCard(unittest.TestCase):
                     "phone": f"8812621563{i}",
                     "birth_date": date}
             self.book._add(note=note)
-        self.assertEqual(self.book.search(phone_number='88126215632', is_strict=True), 2)
+        self.assertEqual(self.book.search(phone='88126215632', is_strict=True), 2)
 
     def test_search_date_strict(self):
         _date = ''
@@ -192,7 +192,7 @@ class TestCard(unittest.TestCase):
                     "phone": f"8812621563{i}",
                     "birth_date": date}
             self.book._add(note=note)
-        self.assertEqual(self.book.search(date=_date, is_strict=True), 2)
+        self.assertEqual(self.book.search(birth_date=_date, is_strict=True), 2)
 
     def test_search_name_fuzzy(self):
         for i in range(10):

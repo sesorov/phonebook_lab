@@ -79,6 +79,28 @@ class BookInterface(Book):
         self._add(note=note)
         print(green + "Successfully added." + Text.END)
 
+    def search_notes(self):
+        green = GColor.RGB(15, 155, 43)
+        print(
+            green + "Tip: if you don't remember name or surname, leave them empty or write at least one uppercase and one lowercase letter." + Text.END)
+        print(
+            green + "Tip: if you don't remember phone leave it empty or write 11 digits: all that you remember + zeros or other same digits (like +79530000088)" + Text.END)
+        print(
+            green + "Tip: if you don't remember birth date, leave it empty or write it like 06.07.0001 (in case you don't remember year)." + Text.END)
+        search_data = self.get_user_data(strict_data=False)
+        print(green + Text.BOLD + '*' * 14 + " SEARCH RESULTS " + '*' * 14 + Text.END)
+        _ids = self.search(**search_data, is_strict=False, output_range=3)
+        if isinstance(_ids, int) or len(_ids) == 0:
+            user_input = input("Sorry, nothing was found. Try again? (Y/N):")
+            while user_input not in "YyNn":
+                user_input = input(Text.RED + "Please, use only Y/N: " + Text.END)
+            if user_input in "Yy":
+                self.search_notes()
+            else:
+                return None
+        self.print_table(notes_ids=_ids)
+        input(green + "Press Enter to return to main menu." + Text.END)
+
     def del_note(self):
         green = GColor.RGB(15, 155, 43)
         print(green + Text.BOLD + '*' * 14 + " REMOVING RECORD " + '*' * 14 + Text.END)
@@ -103,7 +125,7 @@ class BookInterface(Book):
                 if user_input == '1':
                     self.del_note()
                 elif user_input == '2':
-                    self.view()
+                    self.print_table()
                     _id = input("Please, select an ID of a record to be deleted or write Q to return to main menu: ")
                     while _id != 'Q':
                         if _id.isdigit():
@@ -141,7 +163,7 @@ class BookInterface(Book):
         if user_input == 'Q':
             return None
         else:
-            _ids = self.search(phone_number=user_input, is_strict=False)
+            _ids = self.search(phone=user_input, is_strict=False)
             if len(_ids) == 0:
                 print("Couldn't find any records with such a phone number. Try again?")
                 user_input = input("Y/N: ")
@@ -161,8 +183,8 @@ class BookInterface(Book):
                     else:
                         return None
                 else:
-                    print(Text.GREEN + "There were several matches by phone number:")
-                    self.print(notes_ids=_ids, mark_first=False)
+                    print(Text.GREEN + "There were several matches by phone number:" + Text.END)
+                    self.print_table(notes_ids=_ids)
                     user_input = input("Enter record ID or Q to exit to main menu: ")
                     while user_input != 'Q' and (not user_input.isdigit() or not 0 <= int(user_input) < len(_ids)):
                         print(Text.RED + "Check if the data is entered correctly." + Text.END)
@@ -214,7 +236,7 @@ class BookInterface(Book):
                 additional = self.get_user_data(is_name=False, is_surname=False)
                 self._add({**note, **additional})
             elif user_input == '3':
-                self.view()
+                self.print_table()
                 _id = input("Please, select an ID of a record to be edited or write Q to return to main menu: ")
                 while _id != 'Q':
                     if _id.isdigit():
@@ -266,7 +288,7 @@ class BookInterface(Book):
         if len(notes) == 0:
             print(f"Sorry, there are no birthdays in next {days} days.")
         else:
-            self.print(notes=notes)
+            self.print(notes=notes, mark_first=False)
         user_input = input("Please, click Enter to get back to Main Menu or type amount of days to search for birthdays: ")
         while user_input != "" and (not user_input.isdigit() or int(user_input) > 365 or int(user_input) < 0):
             user_input = input(Text.RED + "Please, use only valid (0 < amount < 365) amount to search or press Enter to quit: " + Text.END)
@@ -275,7 +297,8 @@ class BookInterface(Book):
 
     def view_all(self):
         green = GColor.RGB(15, 155, 43)
-        self.view()
+        print(green + Text.BOLD + f"**********PHONEBOOK {self.path}**********" + Text.END)
+        self.print_table()
         input(green + "Press Enter to return to main menu." + Text.END)
 
     def view_age(self):
@@ -316,11 +339,14 @@ class BookInterface(Book):
         for _id, note in enumerate(self._get_all()):
             note['id'] = _id
             try:
+                note_age = self._age(_id)
+                note['years'] = str(note_age['years'])
+                note['months'] = str(note_age['months'])
                 if is_older:
-                    if self._age(_id)['years'] > int(age):
+                    if note_age['years'] > int(age):
                         target.append(note)
                 else:
-                    if self._age(_id)['years'] < int(age):
+                    if note_age['years'] < int(age):
                         target.append(note)
             except KeyError:
                 continue
@@ -328,5 +354,5 @@ class BookInterface(Book):
         if len(target) == 0:
             print(Text.RED + "Not found." + Text.END)
         else:
-            self.print(notes=target)
+            self.print_table(notes=target)
         input(green + "Press Enter to get back to Main Menu." + Text.END)
