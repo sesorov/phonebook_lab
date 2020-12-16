@@ -252,7 +252,7 @@ class Book:
             raw = tuple(map(int, check_date.split('.')))
             temp = datetime(day=raw[0], month=raw[1], year=raw[2])
             return True
-        except ValueError:
+        except Exception:
             return False
 
     @staticmethod
